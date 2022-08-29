@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<!-- import bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="js/jquery-3.6.0.min.js"></script>
+<title>San Happy Test Page</title>
+</head>
+<body>
+
+	<header style="text-align: center">三喜</header>
+
+	<div id="x" class="container-fluid">
+	
+		<h1 style="text-align: center; width: 100%">
+			歡迎 請輸入下列表單 您的資料將會在傳輸過程中受到加密
+		</h1>
+		<br>
+		
+		<div class="container" style="text-align: center; width: 80%">
+			<form id="dataResult" class="form-control" action="" method="post">
+				<h2>輸入數字: </h2> <input class="form-control" type="text" id="number2" name="number">
+				<h2>輸入中文字: </h2><input class="form-control" type="text" id="chinese2" name="chinese">
+				<h2>輸入英文字: </h2><input class="form-control" type="text" id="english2" name="english"> 
+				<button class="btn btn-primary btn-large" type="button" onclick="getResult()">Submit</button>
+			</form>
+		</div>
+		
+		<div id="reply">
+			
+
+		</div>
+		
+		
+	
+	</div>
+
+
+
+
+	<script type="text/javascript">
+
+		function getResult(){
+			console.log('見鬼了');
+			let number =$('#number2').val();
+			console.log(number);
+			let chinese =$('#chinese2').val();
+			let english =$('#english2').val();
+
+			
+			
+	
+			$.ajax({
+				url:"getResult",
+				data:{number,chinese,english},
+				type:"POST",
+				dataType:"json",
+				success:function(data){
+					//alert("成功");
+					console.log('success');
+					var list = data.content.each();
+					console.log(list);
+					$("#reply").html(
+						`<div style="text-align:center;">
+							<table class="table table-hover" style="border-width: 2px; border-radius:3px;">
+								<tr style="background-color: silver;">
+									<th>編號</th>
+									<th>數字</th>
+									<th>中文</th>
+									<th>英文</th>
+								</tr>
+								<tbody>
+									// 備忘錄: 明天要將得到的page物件想辦法foreach出來
+									<tr>
+										<td>${data.content[0].id}</td>
+										<td>${data.content[0].number}</td>
+										<td>${data.content[0].chinese}</td>
+										<td>${data.content[0].english}</td>
+									</tr>
+								</tbody>
+
+
+
+							</table>
+
+							${JSON.stringify(data.content[0])}
+						</div>`
+						+'<div style="width:100%; text-align:center;" >'+'共'+data.totalPages+'頁，'+data.totalElements+'筆資料'+'</div>'
+							
+					 );
+				},
+				error:function(jqXHR,textStatus,errorThrown){
+					alert("失敗");
+					$("#reply").html(
+						`<span class="color-red"> textStatus=${textStatus}; errorThrown=${errorThrown} </span>`
+							
+					);
+				}
+			})
+			return false;
+			};
+	</script>
+
+
+
+
+</body>
+</html>
