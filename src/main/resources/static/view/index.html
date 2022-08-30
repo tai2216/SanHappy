@@ -6,13 +6,21 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script src="js/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
+<!--AES加密相關-->
+<script src="js/core.js"></script>
+<script src="js/cipher-core.js"></script>
+<script src="js/mode-ecb.js"></script>
+<script src="js/aes.js"></script>
 <title>San Happy Test Page</title>
 </head>
 <body>
 
-	<header style="text-align: center">三喜</header>
+	
 
 	<div id="x" class="container-fluid">
+
+		<br>
 	
 		<h1 style="text-align: center; width: 100%">
 			歡迎 請輸入下列表單 您的資料將會在傳輸過程中受到加密
@@ -20,16 +28,28 @@
 		<br>
 		
 		<div class="container" style="text-align: center; width: 80%">
-			<form id="dataResult" class="form-control" action="" method="post">
-				<h2>輸入數字: </h2> <input class="form-control" type="text" id="number2" name="number">
-				<h2>輸入中文字: </h2><input class="form-control" type="text" id="chinese2" name="chinese">
-				<h2>輸入英文字: </h2><input class="form-control" type="text" id="english2" name="english"> 
-				<button class="btn btn-primary btn-large" type="button" onclick="getResult()">Submit</button>
-			</form>
+			<fieldset class="form-control">
+				<form id="dataResult" class="form-control" action="" method="post">
+					<br>
+					<h2>輸入數字: </h2> <input class="form-control" type="text" id="number2" name="number">
+					<br>
+					<h2>輸入中文字: </h2><input class="form-control" type="text" id="chinese2" name="chinese">
+					<br>
+					<h2>輸入英文字: </h2><input class="form-control" type="text" id="english2" name="english"> 
+					<br>
+					<button class="btn btn-primary btn-large" type="button" onclick="getResult()">送出</button>
+				</form>
+			</fieldset>
 		</div>
-		
+
+		<br>
+
 		<div id="reply">
 			
+
+		</div>
+
+		<div id="testForeach">
 
 		</div>
 		
@@ -41,17 +61,51 @@
 
 
 	<script type="text/javascript">
+		//AES (Advanced Encrption Standard 高級加密標準) 是一種對稱加密演算法 加密和解密使用相同的密鑰
+
+
+		//加密解密使用的密鑰 前後端必須相同
+		var key = CryptoJS.enc.Utf8.parse("1538663015386630");  
+		
+
 
 		function getResult(){
-			console.log('見鬼了');
+			console.log('進來了getResult方法');
+
+
+
+
+
+			//將傳入的三個參數number chinese english 分別以CryptoJS的AES進行加密
+			
 			let number =$('#number2').val();
-			console.log(number);
-			let chinese =$('#chinese2').val();
-			let english =$('#english2').val();
+			var encodedNumber = CryptoJS.AES.encrypt(number, key, {  
+        		mode: CryptoJS.mode.ECB,  
+        		padding: CryptoJS.pad.Pkcs7
+    		});   
+
 
 			
+			let chinese =$('#chinese2').val();
+			var encodedChinese = CryptoJS.AES.encrypt(chinese, key, {  
+        		mode: CryptoJS.mode.ECB,  
+        		padding: CryptoJS.pad.Pkcs7
+    		});  
+
+
+			let english =$('#english2').val();
+			var encodedEnglish = CryptoJS.AES.encrypt(english, key, {  
+        		mode: CryptoJS.mode.ECB,  
+        		padding: CryptoJS.pad.Pkcs7
+    		});  
+
+			//如果直接將CryptoJS生成的物件轉換為字串會是一個BASE64編碼 要拿到ciphertext.toString才是後端所需的格式
+			 chinese = encodedChinese.ciphertext.toString();
+			 number = encodedNumber.ciphertext.toString();
+			 english = encodedEnglish.ciphertext.toString();
+
 			
-	
+			//將資料送去後端api進行儲存後返回後端資料庫的查詢結果 以PAGE物件形式回傳將會顯示最新五筆資料
 			$.ajax({
 				url:"getResult",
 				data:{number,chinese,english},
@@ -60,9 +114,33 @@
 				success:function(data){
 					//alert("成功");
 					console.log('success');
-					var list = data.content.each();
-					console.log(list);
-					$("#reply").html(
+					//印出得到的資料長度 後端page物件預設是5 因此長度為5
+					console.log(data.content.length);
+					//使用for迴圈把getResult得到的查詢結果顯示出來 測試結果失敗
+					// let i;
+					// let j;
+					// var allResults = function (data){
+					// 	for (let i = 0; i < data.content.length; i++) {
+					// 		console.log('for loop was executed '+i +' times');								
+					// 		var re =
+					// 			`<tr>
+					// 				<td>${data.content[i].id}</td>
+					// 				<td>${data.content[i].number}</td>
+					// 				<td>${data.content[i].chinese}</td>
+					// 				<td>${data.content[i].english}</td>
+					// 			</tr>`;																																									
+					// 	};
+
+					// 	return re;						
+					// };
+				
+
+					// console.log(allResults(data))
+
+					
+
+					
+					$("#reply").html(						
 						`<div style="text-align:center;">
 							<table class="table table-hover" style="border-width: 2px; border-radius:3px;">
 								<tr style="background-color: silver;">
@@ -71,28 +149,46 @@
 									<th>中文</th>
 									<th>英文</th>
 								</tr>
-								<tbody>
-									// 備忘錄: 明天要將得到的page物件想辦法foreach出來
-									<tr>
+								<tbody>`+
+									`<tr>
 										<td>${data.content[0].id}</td>
 										<td>${data.content[0].number}</td>
 										<td>${data.content[0].chinese}</td>
 										<td>${data.content[0].english}</td>
 									</tr>
-								</tbody>
-
-
-
-							</table>
-
-							${JSON.stringify(data.content[0])}
+									<tr>
+										<td>${data.content[1].id}</td>
+										<td>${data.content[1].number}</td>
+										<td>${data.content[1].chinese}</td>
+										<td>${data.content[1].english}</td>
+									</tr>
+									<tr>
+										<td>${data.content[2].id}</td>
+										<td>${data.content[2].number}</td>
+										<td>${data.content[2].chinese}</td>
+										<td>${data.content[2].english}</td>
+									</tr>
+									<tr>
+										<td>${data.content[3].id}</td>
+										<td>${data.content[3].number}</td>
+										<td>${data.content[3].chinese}</td>
+										<td>${data.content[3].english}</td>
+									</tr>
+									<tr>
+										<td>${data.content[4].id}</td>
+										<td>${data.content[4].number}</td>
+										<td>${data.content[4].chinese}</td>
+										<td>${data.content[4].english}</td>
+									</tr>`
+								+`</tbody>
+							</table>							
 						</div>`
 						+'<div style="width:100%; text-align:center;" >'+'共'+data.totalPages+'頁，'+data.totalElements+'筆資料'+'</div>'
 							
 					 );
 				},
 				error:function(jqXHR,textStatus,errorThrown){
-					alert("失敗");
+					alert("失敗 請再試一次");
 					$("#reply").html(
 						`<span class="color-red"> textStatus=${textStatus}; errorThrown=${errorThrown} </span>`
 							
