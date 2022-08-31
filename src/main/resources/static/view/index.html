@@ -116,29 +116,31 @@
 					console.log('success');
 					//印出得到的資料長度 後端page物件預設是5 因此長度為5
 					console.log(data.content.length);
-					//使用for迴圈把getResult得到的查詢結果顯示出來 測試結果失敗
-					// let i;
-					// let j;
-					// var allResults = function (data){
-					// 	for (let i = 0; i < data.content.length; i++) {
-					// 		console.log('for loop was executed '+i +' times');								
-					// 		var re =
-					// 			`<tr>
-					// 				<td>${data.content[i].id}</td>
-					// 				<td>${data.content[i].number}</td>
-					// 				<td>${data.content[i].chinese}</td>
-					// 				<td>${data.content[i].english}</td>
-					// 			</tr>`;																																									
-					// 	};
-
-					// 	return re;						
-					// };
-				
-
-					// console.log(allResults(data))
-
-					
-
+					// 使用for迴圈把getResult得到的查詢結果顯示出來 8/31 12:38 測試結果成功!
+					let i;
+					let j;
+					var allResults = function (data){
+						for (let i = 1; i < data.content.length+1; i++) {
+							console.log('for loop was executed '+i +' times');																																																																
+								for (let j = 0; j < i; j++) {									
+									var re =
+								`<tr>
+									<td>${data.content[j].id}</td>
+									<td>${data.content[j].number}</td>
+									<td>${data.content[j].chinese}</td>
+									<td>${data.content[j].english}</td>
+								</tr>`;																
+								}
+								
+								var test = test+=re;
+								
+							};
+							//刪除最一開始為undefined的字元
+							test = test.replace('undefined', '');																			
+							console.log('test: '+test);
+						return test;						
+					};
+					// console.log(allResults(data))					
 					
 					$("#reply").html(						
 						`<div style="text-align:center;">
@@ -150,36 +152,37 @@
 									<th>英文</th>
 								</tr>
 								<tbody>`+
-									`<tr>
-										<td>${data.content[0].id}</td>
-										<td>${data.content[0].number}</td>
-										<td>${data.content[0].chinese}</td>
-										<td>${data.content[0].english}</td>
-									</tr>
-									<tr>
-										<td>${data.content[1].id}</td>
-										<td>${data.content[1].number}</td>
-										<td>${data.content[1].chinese}</td>
-										<td>${data.content[1].english}</td>
-									</tr>
-									<tr>
-										<td>${data.content[2].id}</td>
-										<td>${data.content[2].number}</td>
-										<td>${data.content[2].chinese}</td>
-										<td>${data.content[2].english}</td>
-									</tr>
-									<tr>
-										<td>${data.content[3].id}</td>
-										<td>${data.content[3].number}</td>
-										<td>${data.content[3].chinese}</td>
-										<td>${data.content[3].english}</td>
-									</tr>
-									<tr>
-										<td>${data.content[4].id}</td>
-										<td>${data.content[4].number}</td>
-										<td>${data.content[4].chinese}</td>
-										<td>${data.content[4].english}</td>
-									</tr>`
+									allResults(data)
+									// `<tr>
+									// 	<td>${data.content[0].id}</td>
+									// 	<td>${data.content[0].number}</td>
+									// 	<td>${data.content[0].chinese}</td>
+									// 	<td>${data.content[0].english}</td>
+									// </tr>
+									// <tr>
+									// 	<td>${data.content[1].id}</td>
+									// 	<td>${data.content[1].number}</td>
+									// 	<td>${data.content[1].chinese}</td>
+									// 	<td>${data.content[1].english}</td>
+									// </tr>
+									// <tr>
+									// 	<td>${data.content[2].id}</td>
+									// 	<td>${data.content[2].number}</td>
+									// 	<td>${data.content[2].chinese}</td>
+									// 	<td>${data.content[2].english}</td>
+									// </tr>
+									// <tr>
+									// 	<td>${data.content[3].id}</td>
+									// 	<td>${data.content[3].number}</td>
+									// 	<td>${data.content[3].chinese}</td>
+									// 	<td>${data.content[3].english}</td>
+									// </tr>
+									// <tr>
+									// 	<td>${data.content[4].id}</td>
+									// 	<td>${data.content[4].number}</td>
+									// 	<td>${data.content[4].chinese}</td>
+									// 	<td>${data.content[4].english}</td>
+									// </tr>`
 								+`</tbody>
 							</table>							
 						</div>`
